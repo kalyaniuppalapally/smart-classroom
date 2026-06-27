@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Timetable - Smart Classroom</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #f0f2f5; }
+        .navbar { background: #1a1a2e; }
+        .navbar-brand { color: white !important; }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .table th { background: #1a1a2e; color: white; }
+        .badge-subject { background: #0d6efd; }
+        .day-header { background: #16213e; color: white; padding: 8px 15px; border-radius: 8px; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="#">🎓 Smart Classroom</a>
+            <div class="ms-auto">
+                <a href="/dashboard" class="btn btn-outline-light btn-sm me-2">Dashboard</a>
+                <a href="/logout" class="btn btn-outline-light btn-sm">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h4 class="mb-4">📅 Timetable Manager</h4>
+
+        <div class="row g-4">
+
+            <!-- Add Timetable Entry Form -->
+            <div class="col-md-4">
+                <div class="card p-4">
+                    <h5 class="mb-3">➕ Add Class</h5>
+
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            <div class="alert alert-success">{{ messages[0] }}</div>
+                        {% endif %}
+                    {% endwith %}
+
+                    <form method="POST" action="/add_timetable">
+                        <div class="mb-3">
+                            <label class="form-label">Subject</label>
+                            <input type="text" name="subject" class="form-control" placeholder="e.g. Mathematics" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Teacher</label>
+                            <select name="teacher_id" class="form-select" required>
+                                <option value="">Select Teacher</option>
+                                {% for teacher in teachers %}
+                                <option value="{{ teacher.id }}">{{ teacher.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Day</label>
+                            <select name="day" class="form-select" required>
+                                <option value="Monday">Monday</option>
+                                <option value="Tuesday">Tuesday</option>
+                                <option value="Wednesday">Wednesday</option>
+                                <option value="Thursday">Thursday</option>
+                                <option value="Friday">Friday</option>
+                                <option value="Saturday">Saturday</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Start Time</label>
+                            <input type="time" name="start_time" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">End Time</label>
+                            <input type="time" name="end_time" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Room</label>
+                            <input type="text" name="room" class="form-control" placeholder="e.g. Room 101">
+                        </div>
+                        <button type="submit" class="btn btn-dark w-100">Add to Timetable</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Timetable View -->
+            <div class="col-md-8">
+                <div class="card p-4">
+                    <h5 class="mb-3">📋 Weekly Timetable</h5>
+
+                    {% set days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] %}
+                    {% for day in days %}
+                        {% set day_entries = entries | selectattr('day', 'equalto', day) | list %}
+                        {% if day_entries %}
+                        <div class="mb-3">
+                            <div class="day-header mb-2">{{ day }}</div>
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Subject</th>
+                                        <th>Teacher</th>
+                                        <th>Room</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for entry in day_entries %}
+                                    <tr>
+                                        <td>{{ entry.start_time }} - {{ entry.end_time }}</td>
+                                        <td><span class="badge bg-primary">{{ entry.subject }}</span></td>
+                                        <td>{{ entry.teacher.name }}</td>
+                                        <td>{{ entry.room or 'TBD' }}</td>
+                                        <td>
+                                            <a href="/delete_timetable/{{ entry.id }}"
+                                               class="btn btn-danger btn-sm"
+                                               onclick="return confirm('Delete this class?')">Delete</a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if not entries %}
+                    <div class="text-center text-muted mt-4">
+                        <p>No classes added yet. Add your first class! 👈</p>
+                    </div>
+                    {% endif %}
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

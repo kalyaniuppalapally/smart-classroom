@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard - Smart Classroom</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #f0f2f5; }
+        .navbar { background: #1a1a2e; }
+        .navbar-brand, .nav-link { color: white !important; }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .card:hover { transform: translateY(-5px); }
+        .card-icon { font-size: 40px; margin-bottom: 10px; }
+        .welcome-box {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="#">🎓 Smart Classroom</a>
+            <div class="ms-auto">
+                <span class="text-white me-3">👤 {{ user.name }} ({{ user.role }})</span>
+                <a href="/logout" class="btn btn-outline-light btn-sm">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+
+        <div class="welcome-box">
+            <h3>Welcome back, {{ user.name }}! 👋</h3>
+            <p class="mb-0">You are logged in as <strong>{{ user.role }}</strong></p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card p-4 text-center">
+                    <div class="card-icon">📅</div>
+                    <h5>Timetable</h5>
+                    <p class="text-muted">View and manage class schedules</p>
+                    <a href="/timetable" class="btn btn-dark btn-sm">View Timetable</a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-4 text-center">
+                    <div class="card-icon">📸</div>
+                    <h5>Attendance</h5>
+                    <p class="text-muted">Face recognition attendance system</p>
+                    <a href="/attendance" class="btn btn-dark btn-sm">Mark Attendance</a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-4 text-center">
+                    <div class="card-icon">🔔</div>
+                    <h5>Notifications</h5>
+                    <p class="text-muted">Topic updates and smart alerts</p>
+                    <a href="/notifications" class="btn btn-dark btn-sm">View Notifications</a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-4 text-center">
+                    <div class="card-icon">📊</div>
+                    <h5>Performance</h5>
+                    <p class="text-muted">AI analytics and predictions</p>
+                    <a href="/analytics" class="btn btn-dark btn-sm">View Analytics</a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-4 text-center">
+                    <div class="card-icon">📝</div>
+                    <h5>Notes</h5>
+                    <p class="text-muted">Upload and access study materials</p>
+                    <a href="/notes" class="btn btn-dark btn-sm">View Notes</a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-4 text-center">
+                    <div class="card-icon">👥</div>
+                    <h5>Students</h5>
+                    <p class="text-muted">Manage student profiles</p>
+                    <a href="/manage" class="btn btn-dark btn-sm">Manage Users</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

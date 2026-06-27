@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Users - Smart Classroom</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #f0f2f5; }
+        .navbar { background: #1a1a2e; }
+        .navbar-brand, .nav-link { color: white !important; }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .btn-dark { border-radius: 8px; }
+        .badge-teacher { background: #0d6efd; }
+        .badge-student { background: #198754; }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="#">🎓 Smart Classroom</a>
+            <div class="ms-auto">
+                <a href="/dashboard" class="btn btn-outline-light btn-sm me-2">Dashboard</a>
+                <a href="/logout" class="btn btn-outline-light btn-sm">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h4 class="mb-4">👥 Manage Users</h4>
+
+        <div class="row g-4">
+
+            <!-- Add User Form -->
+            <div class="col-md-4">
+                <div class="card p-4">
+                    <h5 class="mb-3">➕ Add New User</h5>
+
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            <div class="alert alert-success">{{ messages[0] }}</div>
+                        {% endif %}
+                    {% endwith %}
+
+                    <form method="POST" action="/add_user">
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" name="name" class="form-control" placeholder="Enter name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" class="form-control" placeholder="Enter email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" name="password" class="form-control" placeholder="Enter password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Role</label>
+                            <select name="role" class="form-select">
+                                <option value="student">Student</option>
+                                <option value="teacher">Teacher</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-dark w-100">Add User</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Users List -->
+            <div class="col-md-8">
+                <div class="card p-4">
+                    <h5 class="mb-3">📋 All Users</h5>
+                    <table class="table table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ user.name }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>
+                                    {% if user.role == 'teacher' %}
+                                        <span class="badge bg-primary">Teacher</span>
+                                    {% elif user.role == 'student' %}
+                                        <span class="badge bg-success">Student</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Admin</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="/delete_user/{{ user.id }}" class="btn btn-danger btn-sm"
+                                       onclick="return confirm('Are you sure?')">Delete</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

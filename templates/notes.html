@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notes - Smart Classroom</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #f0f2f5; }
+        .navbar { background: #1a1a2e; }
+        .navbar-brand { color: white !important; }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .note-card {
+            border-left: 5px solid #1a1a2e;
+            border-radius: 10px;
+            background: white;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+        }
+        .note-card.pdf { border-left-color: #dc3545; }
+        .note-card.docx { border-left-color: #0d6efd; }
+        .note-card.pptx { border-left-color: #fd7e14; }
+        .note-card.other { border-left-color: #6c757d; }
+        .note-time { font-size: 12px; color: #999; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="#">🎓 Smart Classroom</a>
+            <div class="ms-auto">
+                <a href="/dashboard" class="btn btn-outline-light btn-sm me-2">Dashboard</a>
+                <a href="/logout" class="btn btn-outline-light btn-sm">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h4 class="mb-4">📝 Notes & Study Materials</h4>
+
+        <div class="row g-4">
+
+            <!-- Upload Form -->
+            <div class="col-md-4">
+                <div class="card p-4">
+                    <h5 class="mb-3">📤 Upload Note</h5>
+
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            <div class="alert alert-success">{{ messages[0] }}</div>
+                        {% endif %}
+                    {% endwith %}
+
+                    <form method="POST" action="/upload_note" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label">Title</label>
+                            <input type="text" name="title" class="form-control"
+                                placeholder="e.g. Chapter 5 Notes" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Subject</label>
+                            <input type="text" name="subject" class="form-control"
+                                placeholder="e.g. Mathematics" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea name="description" class="form-control" rows="3"
+                                placeholder="Brief description..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">File</label>
+                            <input type="file" name="file" class="form-control" required>
+                            <small class="text-muted">PDF, DOCX, PPTX, images allowed</small>
+                        </div>
+                        <button type="submit" class="btn btn-dark w-100">Upload Note</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Notes List -->
+            <div class="col-md-8">
+                <div class="card p-4">
+                    <h5 class="mb-3">📚 All Notes</h5>
+
+                    {% if notes %}
+                        {% for note in notes %}
+                        {% set ext = note.filename.split('.')[-1].lower() %}
+                        <div class="note-card {{ ext if ext in ['pdf', 'docx', 'pptx'] else 'other' }}">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    {% if ext == 'pdf' %}
+                                        <span class="badge bg-danger mb-1">📄 PDF</span>
+                                    {% elif ext == 'docx' %}
+                                        <span class="badge bg-primary mb-1">📝 DOCX</span>
+                                    {% elif ext == 'pptx' %}
+                                        <span class="badge bg-warning text-dark mb-1">📊 PPTX</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary mb-1">📎 FILE</span>
+                                    {% endif %}
+                                    <h6 class="mb-1 mt-1">{{ note.title }}</h6>
+                                    <p class="mb-1 text-muted small">{{ note.description }}</p>
+                                    <small class="note-time">
+                                        📚 {{ note.subject }} &nbsp;|&nbsp;
+                                        👤 {{ note.uploaded_by.name }} &nbsp;|&nbsp;
+                                        🕐 {{ note.timestamp }}
+                                    </small>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="/download_note/{{ note.id }}"
+                                       class="btn btn-success btn-sm">⬇ Download</a>
+                                    <a href="/delete_note/{{ note.id }}"
+                                       class="btn btn-outline-danger btn-sm"
+                                       onclick="return confirm('Delete this note?')">✕</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center text-muted mt-4">
+                            <p>No notes uploaded yet. Upload your first note! 👈</p>
+                        </div>
+                    {% endif %}
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

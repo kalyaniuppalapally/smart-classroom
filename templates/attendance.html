@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Attendance - Smart Classroom</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #f0f2f5; }
+        .navbar { background: #1a1a2e; }
+        .navbar-brand { color: white !important; }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .table th { background: #1a1a2e; color: white; }
+        .present { color: #198754; font-weight: bold; }
+        .absent { color: #dc3545; font-weight: bold; }
+        .btn-present { background: #198754; color: white; border: none; }
+        .btn-absent { background: #dc3545; color: white; border: none; }
+        .btn-present:hover { background: #157347; color: white; }
+        .btn-absent:hover { background: #bb2d3b; color: white; }
+        .stats-box {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="#">🎓 Smart Classroom</a>
+            <div class="ms-auto">
+                <a href="/dashboard" class="btn btn-outline-light btn-sm me-2">Dashboard</a>
+                <a href="/logout" class="btn btn-outline-light btn-sm">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h4 class="mb-4">📸 Attendance Manager</h4>
+
+        <!-- Stats Row -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="stats-box">
+                    <h2>{{ total_students }}</h2>
+                    <p class="mb-0">Total Students</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stats-box" style="background: linear-gradient(135deg, #198754, #157347);">
+                    <h2>{{ present_today }}</h2>
+                    <p class="mb-0">Present Today</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stats-box" style="background: linear-gradient(135deg, #dc3545, #bb2d3b);">
+                    <h2>{{ absent_today }}</h2>
+                    <p class="mb-0">Absent Today</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+
+            <!-- Mark Attendance -->
+            <div class="col-md-6">
+                <div class="card p-4">
+                    <h5 class="mb-3">✅ Mark Attendance</h5>
+
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            <div class="alert alert-success">{{ messages[0] }}</div>
+                        {% endif %}
+                    {% endwith %}
+
+                    <form method="POST" action="/mark_attendance">
+                        <div class="mb-3">
+                            <label class="form-label">Select Student</label>
+                            <select name="student_id" class="form-select" required>
+                                <option value="">Choose Student</option>
+                                {% for student in students %}
+                                <option value="{{ student.id }}">{{ student.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Subject</label>
+                            <input type="text" name="subject" class="form-control" placeholder="e.g. Mathematics" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Date</label>
+                            <input type="date" name="date" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Status</label>
+                            <div class="d-flex gap-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="status" value="Present" checked>
+                                    <label class="form-check-label present">Present</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="status" value="Absent">
+                                    <label class="form-check-label absent">Absent</label>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-dark w-100">Mark Attendance</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Attendance History -->
+            <div class="col-md-6">
+                <div class="card p-4">
+                    <h5 class="mb-3">📋 Recent Attendance</h5>
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Subject</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in records %}
+                            <tr>
+                                <td>{{ record.student.name }}</td>
+                                <td>{{ record.subject }}</td>
+                                <td>{{ record.date }}</td>
+                                <td>
+                                    {% if record.status == 'Present' %}
+                                        <span class="badge bg-success">Present</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Absent</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% if not records %}
+                    <p class="text-muted text-center">No attendance records yet!</p>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
